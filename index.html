@@ -3,643 +3,675 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>一键清除手机骚扰标记</title>
+<title>虚拟号外呼管理 - 主号隐身，副号外呼</title>
 <style>
-:root {
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --primary-light: #eff6ff;
-  --success: #059669;
-  --success-bg: #ecfdf5;
-  --danger: #dc2626;
-  --danger-bg: #fef2f2;
-  --warning: #d97706;
-  --warning-bg: #fffbeb;
-  --bg: #f1f5f9;
-  --card: #ffffff;
-  --border: #e2e8f0;
-  --text: #0f172a;
-  --text2: #475569;
-  --text3: #94a3b8;
-  --shadow: 0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
-  --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
-  --radius: 12px;
-  --radius-sm: 8px;
-  --font: -apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
-  --font-mono: "SF Mono","Cascadia Code","Consolas",monospace;
+:root{
+  --pri:#2563eb;--pri2:#1d4ed8;--pril:#eff6ff;--suc:#059669;--sucb:#ecfdf5;
+  --dan:#dc2626;--danb:#fef2f2;--war:#d97706;--warb:#fffbeb;
+  --bg:#f1f5f9;--card:#fff;--bd:#e2e8f0;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;
+  --sh:0 1px 3px rgba(0,0,0,.06);--shl:0 10px 25px rgba(0,0,0,.1);
+  --r:12px;--rs:8px;
+  --font:-apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  --mono:"SF Mono","Cascadia Code","Consolas",monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f172a; --card: #1e293b; --border: #334155;
-    --text: #f1f5f9; --text2: #94a3b8; --text3: #64748b;
-    --primary-light: #1e3a5f; --success-bg: #022c22; --warning-bg: #451a03; --danger-bg: #450a0a;
-    --shadow: 0 1px 3px rgba(0,0,0,0.3); --shadow-lg: 0 10px 25px rgba(0,0,0,0.5);
-  }
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0f172a;--card:#1e293b;--bd:#334155;--tx:#f1f5f9;--tx2:#94a3b8;--tx3:#64748b;
+    --pril:#1e3a5f;--sucb:#022c22;--warb:#451a03;--danb:#450a0a;
+    --sh:0 1px 3px rgba(0,0,0,.3);--shl:0 10px 25px rgba(0,0,0,.5);}
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
-button,input{font-family:inherit;font-size:inherit}
-button{cursor:pointer;border:none}
-input{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;background:var(--card);color:var(--text);width:100%}
-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,0.12)}
+body{font-family:var(--font);background:var(--bg);color:var(--tx);line-height:1.6;min-height:100vh}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+input,select,textarea{border:1.5px solid var(--bd);border-radius:var(--rs);padding:10px 14px;background:var(--card)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+a{color:var(--pri)}
 
-/* Layout */
-header{
-  background:linear-gradient(135deg,#1e40af,#3b82f6);
-  color:#fff;text-align:center;padding:28px 20px 24px;
-}
-header h1{font-size:1.3rem;font-weight:700;letter-spacing:.02em}
-header p{font-size:.82rem;opacity:.85;margin-top:4px}
-.container{max-width:900px;margin:0 auto;padding:0 16px}
-
-/* Hero Input */
-.hero{background:var(--card);border:2px solid var(--primary);border-radius:var(--radius);padding:24px;margin-top:-16px;position:relative;box-shadow:var(--shadow-lg)}
-.hero-label{font-size:.88rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.hero-row{display:flex;gap:10px;flex-wrap:wrap}
-.hero-row input{flex:1;min-width:200px;font-size:1.1rem;font-family:var(--font-mono);letter-spacing:.06em;height:48px}
-.hero-info{display:flex;gap:16px;margin-top:8px;font-size:.78rem;color:var(--text2);min-height:20px}
-
-/* Buttons */
-.btn{
-  display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:var(--radius-sm);
-  font-size:.88rem;font-weight:600;transition:all .15s;white-space:nowrap;justify-content:center;
-}
-.btn-lg{padding:14px 32px;font-size:1rem;border-radius:var(--radius)}
-.btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,.3)}
-.btn-success{background:var(--success);color:#fff}
-.btn-success:hover{filter:brightness(1.1);transform:translateY(-1px)}
-.btn-outline{border:1.5px solid var(--border);color:var(--text);background:var(--card)}
-.btn-outline:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
-.btn-sm{padding:5px 12px;font-size:.78rem}
-.btn-block{width:100%}
-
-/* Action panel */
-.action-panel{margin:20px 0}
-.action-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
-.action-card h3{font-size:.95rem;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.action-card .desc{font-size:.8rem;color:var(--text2);margin-bottom:14px}
-.action-card.recommended{border-color:#059669;background:var(--success-bg)}
-.action-card.recommended h3::after{content:"推荐";background:#059669;color:#fff;font-size:.65rem;padding:1px 8px;border-radius:10px;font-weight:500}
-
-/* Platform grid */
-.plat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
-.plat-item{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);
-  background:var(--card);transition:all .15s;
-}
-.plat-item:hover{border-color:var(--primary);box-shadow:var(--shadow)}
-.plat-item .plat-name{font-size:.82rem;font-weight:500;display:flex;align-items:center;gap:6px}
-.plat-item .plat-tag{font-size:.65rem;color:var(--text3)}
-
-/* Number list */
-.number-card{
-  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-  padding:16px 18px;margin-bottom:10px;box-shadow:var(--shadow);
-  transition:all .15s;
-}
-.number-card:hover{box-shadow:var(--shadow-lg)}
-.number-card .nhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.number-card .phone{font-family:var(--font-mono);font-size:1.05rem;font-weight:700;letter-spacing:.05em}
-.number-card .meta{font-size:.75rem;color:var(--text2);margin-top:6px;display:flex;gap:12px;flex-wrap:wrap}
-.number-card .progress-row{display:flex;align-items:center;gap:10px;margin-top:10px}
-.number-card .bar{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
-.number-card .bar-fill{height:100%;border-radius:3px;transition:width .3s}
-.number-card .pct{font-size:.75rem;font-weight:600;white-space:nowrap}
-.n-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-
-/* Status badges */
-.badge{font-size:.7rem;padding:2px 8px;border-radius:10px;font-weight:500}
-.badge-ok{background:var(--success-bg);color:var(--success)}
-.badge-wait{background:var(--warning-bg);color:var(--warning)}
-.badge-no{background:var(--danger-bg);color:var(--danger)}
-.badge-gray{background:var(--bg);color:var(--text2)}
-
-/* Template box */
-.template-box{
-  background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);
-  padding:14px 16px;font-size:.8rem;line-height:1.7;white-space:pre-wrap;
-  max-height:200px;overflow-y:auto;font-family:var(--font);position:relative;
-}
-.template-box .copy-btn{position:absolute;top:8px;right:8px}
-
-/* Toast */
-.toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{background:#0f172a;color:#fff;padding:10px 22px;border-radius:24px;font-size:.84rem;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.2);pointer-events:auto;animation:in .3s ease,out .3s ease 2.2s forwards}
-.toast.ok{background:#059669}.toast.err{background:#dc2626}
-@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes out{from{opacity:1}to{opacity:0}}
+/* Header */
+header{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;text-align:center;padding:20px 16px}
+header h1{font-size:1.2rem;font-weight:700}
+header p{font-size:.78rem;opacity:.85;margin-top:2px}
+.container{max-width:960px;margin:0 auto;padding:0 14px}
 
 /* Tabs */
-.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin:20px 0 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs{display:flex;border-bottom:2px solid var(--bd);margin:16px 0;overflow-x:auto;scrollbar-width:none;gap:0}
 .tabs::-webkit-scrollbar{display:none}
-.tab{padding:8px 18px;font-size:.85rem;font-weight:500;color:var(--text2);border-bottom:2.5px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .15s}
-.tab:hover{color:var(--text)}
-.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab{padding:8px 16px;font-size:.84rem;font-weight:500;color:var(--tx2);border-bottom:2.5px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .15s}
+.tab:hover{color:var(--tx);border-bottom-color:var(--tx3)}
+.tab.active{color:var(--pri);border-bottom-color:var(--pri)}
 .panel{display:none}
 .panel.active{display:block}
 
+/* Cards */
+.card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
+.card h3{font-size:.92rem;font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.card .sub{font-size:.78rem;color:var(--tx2);margin-bottom:12px}
+.card.highlight{border-color:var(--suc);background:var(--sucb)}
+.card.warn{border-color:var(--dan);background:var(--danb)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:9px 18px;border-radius:var(--rs);font-size:.85rem;font-weight:600;transition:all .15s;white-space:nowrap;justify-content:center}
+.btn-lg{padding:12px 28px;font-size:.95rem;border-radius:var(--r)}
+.btn-pri{background:var(--pri);color:#fff}
+.btn-pri:hover{background:var(--pri2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.btn-suc{background:var(--suc);color:#fff}
+.btn-suc:hover{filter:brightness(1.1)}
+.btn-out{border:1.5px solid var(--bd);color:var(--tx)}
+.btn-out:hover{border-color:var(--pri);color:var(--pri);background:var(--pril)}
+.btn-sm{padding:4px 10px;font-size:.75rem}
+.btn-block{width:100%}
+.btn-dan{color:var(--dan)}
+.btn-dan:hover{background:var(--danb)}
+
+/* Dialer */
+.dialer{text-align:center}
+.dialer-display{font-family:var(--mono);font-size:2rem;letter-spacing:.08em;padding:16px;min-height:64px;display:flex;align-items:center;justify-content:center;word-break:break-all}
+.dialer-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:320px;margin:0 auto}
+.dialer-keys button{padding:16px;font-size:1.3rem;font-weight:600;border-radius:50%;width:64px;height:64px;margin:0 auto;background:var(--card);border:1px solid var(--bd);transition:all .1s}
+.dialer-keys button:active{background:var(--bd);transform:scale(.95)}
+.dialer-keys .key-call{background:var(--suc);color:#fff;border-color:var(--suc)}
+.dialer-keys .key-call:active{filter:brightness(.9)}
+.dialer-keys .key-del{color:var(--dan);font-size:.9rem}
+.dialer-select{margin-bottom:12px}
+.dialer-select select{padding:8px 14px;font-size:.9rem;font-weight:600;border-radius:var(--rs);min-width:200px}
+.dialer-result{font-size:.78rem;color:var(--tx2);margin-top:10px;min-height:20px}
+
+/* Number cards */
+.num-card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;margin-bottom:8px;box-shadow:var(--sh)}
+.num-card .row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.num-card .phone{font-family:var(--mono);font-weight:700;letter-spacing:.04em}
+.num-card .tag{font-size:.7rem;padding:2px 8px;border-radius:10px;font-weight:500}
+.tag-main{background:var(--pril);color:var(--pri)}
+.tag-virt{background:var(--sucb);color:var(--suc)}
+.tag-dirty{background:var(--warb);color:var(--war)}
+.tag-bad{background:var(--danb);color:var(--dan)}
+
+/* Guide */
+.guide-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.guide-card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:16px;box-shadow:var(--sh)}
+.guide-card h5{font-size:.88rem;font-weight:600;margin-bottom:6px}
+.guide-card .info{font-size:.78rem;color:var(--tx2);line-height:1.7}
+.guide-card .price{font-weight:700;color:var(--pri);font-size:1.1rem}
+.guide-card .badge-rec{background:var(--suc);color:#fff;font-size:.65rem;padding:1px 8px;border-radius:8px;margin-left:6px}
+
+/* Steps */
+.steps{list-style:none;counter-reset:step}
+.steps li{counter-increment:step;padding:8px 0 8px 32px;position:relative;font-size:.82rem;line-height:1.6}
+.steps li::before{content:counter(step);position:absolute;left:0;top:8px;width:22px;height:22px;background:var(--pri);color:#fff;border-radius:50%;text-align:center;line-height:22px;font-size:.7rem;font-weight:700}
+
+/* Toast */
+.toasts{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:#0f172a;color:#fff;padding:10px 22px;border-radius:24px;font-size:.82rem;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.2);pointer-events:auto;animation:ti .3s ease,to .3s ease 2s forwards}
+.toast.ok{background:var(--suc)}.toast.er{background:var(--dan)}
+@keyframes ti{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes to{from{opacity:1}to{opacity:0}}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.on{opacity:1;pointer-events:auto}
+.modal{background:var(--card);border-radius:var(--r);box-shadow:var(--shl);width:100%;max-width:420px;padding:24px}
+.modal h4{font-size:.95rem;margin-bottom:12px}
+.modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--bd);border-radius:var(--rs);padding:12px;text-align:center}
+.stat .n{font-size:1.3rem;font-weight:700}
+.stat .l{font-size:.7rem;color:var(--tx2);margin-top:2px}
+
 /* Responsive */
 @media(max-width:600px){
-  .hero{padding:16px}.hero-row input{font-size:1rem;height:42px}
-  .btn-lg{padding:12px 20px;font-size:.9rem}
-  .plat-grid{grid-template-columns:1fr 1fr;gap:8px}
-  .plat-item{padding:10px 12px}
-  header h1{font-size:1.1rem}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .dialer-keys button{width:56px;height:56px;font-size:1.1rem;padding:12px}
+  .dialer-display{font-size:1.5rem}
+  header h1{font-size:1rem}
 }
 
 /* Footer */
-footer{text-align:center;padding:24px;font-size:.73rem;color:var(--text3)}
-footer a{color:var(--primary)}
+footer{text-align:center;padding:20px;font-size:.73rem;color:var(--tx3)}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🛡️ 一键清除手机骚扰标记</h1>
-  <p>输入号码 → 一键打开所有申诉页面 → 逐个提交即可</p>
+  <h1>🛡️ 虚拟号外呼管理</h1>
+  <p>主号隐身不暴露 · 副号外呼可随时换 · 被标记一键申诉</p>
 </header>
 
 <div class="container">
 
-<!-- ====== HERO INPUT ====== -->
-<div class="hero">
-  <div class="hero-label">📱 输入要清除标记的手机号码</div>
-  <div class="hero-row">
-    <input type="text" id="mainPhone" placeholder="例：13812345678" maxlength="11" autofocus>
-    <button class="btn btn-primary btn-lg" id="btnOneClick" disabled>⚡ 一键全部申诉</button>
-  </div>
-  <div class="hero-info" id="heroInfo"></div>
-</div>
-
-<!-- ====== TABS ====== -->
-<nav class="tabs" id="tabNav">
-  <button class="tab active" data-tab="action">⚡ 一键操作</button>
-  <button class="tab" data-tab="list">📋 我的号码</button>
-  <button class="tab" data-tab="guide">📖 申诉指南</button>
+<!-- Tabs -->
+<nav class="tabs" id="tabs">
+  <button class="tab active" data-tab="dial">📞 拨号外呼</button>
+  <button class="tab" data-tab="numbers">📋 号码管家</button>
+  <button class="tab" data-tab="appeal">🛡️ 申诉清除</button>
+  <button class="tab" data-tab="guide">📖 开通指南</button>
 </nav>
 
-<!-- ====== TAB 1: 一键操作 ====== -->
-<section class="panel active" id="panel-action">
-  <!-- 码号服务平台（推荐） -->
-  <div class="action-card recommended">
-    <h3>🏛️ 方式一：码号服务平台（官方一键清除）</h3>
-    <p class="desc">中国信通院官方平台，提交一次即可同步清除多个平台的标记。最快3分钟生效，<strong>完全免费</strong>。这是最省事的方式！</p>
-    <button class="btn btn-success btn-block btn-lg" id="btnOpene164" disabled>
-      🚀 前往码号服务平台一键清除
-    </button>
-    <p style="margin-top:8px;font-size:.73rem;color:var(--text3)">
-      ⚠️ 需准备：身份证号、手机号实名信息。主要支持联通、山东移动等号码。
-    </p>
+<!-- ===== TAB 1: 拨号外呼 ===== -->
+<div class="panel active" id="panel-dial">
+  <div class="card">
+    <h3>📞 虚拟号外呼面板</h3>
+    <p class="sub">选择副号 → 输入对方号码 → 自动生成带前缀的拨号串，对方只看到副号</p>
+
+    <div class="dialer-select">
+      <select id="dialVnum">
+        <option value="">-- 先添加虚拟号码 --</option>
+      </select>
+      <span id="dialCarrier" style="font-size:.78rem;color:var(--tx2);margin-left:8px"></span>
+    </div>
+
+    <div class="dialer-display" id="dialDisplay">输入号码</div>
+
+    <div class="dialer-keys">
+      <button onclick="dialKey('1')">1</button>
+      <button onclick="dialKey('2')">2</button>
+      <button onclick="dialKey('3')">3</button>
+      <button onclick="dialKey('4')">4</button>
+      <button onclick="dialKey('5')">5</button>
+      <button onclick="dialKey('6')">6</button>
+      <button onclick="dialKey('7')">7</button>
+      <button onclick="dialKey('8')">8</button>
+      <button onclick="dialKey('9')">9</button>
+      <button onclick="dialKey('*')">*</button>
+      <button onclick="dialKey('0')">0</button>
+      <button onclick="dialKey('#')">#</button>
+      <button class="key-del" onclick="dialDel()">⌫</button>
+      <button class="key-call" onclick="dialCall()" id="btnCall">📞</button>
+      <button onclick="dialClear()">清空</button>
+    </div>
+    <div class="dialer-result" id="dialResult"></div>
   </div>
 
-  <!-- 批量打开所有平台 -->
-  <div class="action-card">
-    <h3>🔗 方式二：一键打开所有申诉平台</h3>
-    <p class="desc">同时打开以下 <strong id="platCount">9</strong> 个平台的申诉页面（弹窗拦截请允许），然后逐个提交即可。每个平台独立审核，互不影响。</p>
-    <button class="btn btn-primary btn-block btn-lg" id="btnOpenAll" disabled>
-      🔓 一键打开全部申诉页面
-    </button>
-    <div class="plat-grid" style="margin-top:14px" id="platGrid"></div>
+  <div class="card highlight">
+    <h3>💡 各运营商拨号方式</h3>
+    <table style="width:100%;font-size:.8rem;border-collapse:collapse">
+      <tr style="border-bottom:1px solid var(--bd)"><th style="text-align:left;padding:8px">运营商</th><th style="text-align:left;padding:8px">服务名</th><th style="text-align:left;padding:8px">拨号前缀</th><th style="text-align:left;padding:8px">月租</th></tr>
+      <tr style="border-bottom:1px solid var(--bd)"><td style="padding:8px">中国移动</td><td style="padding:8px">和多号</td><td style="padding:8px;font-family:var(--mono)">12583+副号序号+号码</td><td style="padding:8px">5元</td></tr>
+      <tr style="border-bottom:1px solid var(--bd)"><td style="padding:8px">中国联通</td><td style="padding:8px">隐私小号</td><td style="padding:8px">联通营业厅APP拨打</td><td style="padding:8px">5元</td></tr>
+      <tr style="border-bottom:1px solid var(--bd)"><td style="padding:8px">中国电信</td><td style="padding:8px">天翼小号</td><td style="padding:8px">电信营业厅APP拨打</td><td style="padding:8px">5元</td></tr>
+    </table>
   </div>
+</div>
 
-  <!-- 申诉话术模板 -->
-  <div class="action-card">
-    <h3>📝 方式三：复制申诉话术</h3>
-    <p class="desc">自动生成标准申诉文本，打开各平台后直接粘贴使用，不用每次都重新打字。</p>
-    <div class="template-box" id="templateBox">
-      <button class="btn btn-sm btn-outline copy-btn" id="btnCopyTemplate">📋 复制</button>
-      <span style="color:var(--text3)">请先输入手机号码...</span>
+<!-- ===== TAB 2: 号码管家 ===== -->
+<div class="panel" id="panel-numbers">
+  <div class="stats-grid" id="statsGrid"></div>
+  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+    <button class="btn btn-pri btn-sm" id="btnAddNum">＋ 添加号码</button>
+    <button class="btn btn-out btn-sm" id="btnExport">📥 导出备份</button>
+    <button class="btn btn-out btn-sm" id="btnImport">📤 恢复备份</button>
+    <input type="file" id="importFile" accept=".json" style="display:none">
+    <span style="font-size:.73rem;color:var(--tx3);margin-left:auto;display:flex;align-items:center">💡 主号不用来外呼，只用副号打电话</span>
+  </div>
+  <div id="numList"></div>
+</div>
+
+<!-- ===== TAB 3: 申诉清除 ===== -->
+<div class="panel" id="panel-appeal">
+  <div class="card warn">
+    <h3>⚠️ 副号被标记了怎么办？</h3>
+    <p class="sub">副号被标记为骚扰电话后，可以通过以下方式快速清除。或直接注销副号，重新申请一个新的。</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+    <select id="appealNum" style="flex:1;min-width:180px;max-width:280px"></select>
+    <button class="btn btn-pri" id="btnAppealAll">⚡ 一键打开全部申诉平台</button>
+  </div>
+  <div id="appealPlats" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px"></div>
+  <div class="card" style="margin-top:14px">
+    <h3>📝 申诉话术模板</h3>
+    <div id="appealTemplate" style="background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);padding:14px;font-size:.8rem;line-height:1.7;white-space:pre-wrap;position:relative">
+      <span style="color:var(--tx3)">请先选择号码</span>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ====== TAB 2: 我的号码 ====== -->
-<section class="panel" id="panel-list">
-  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
-    <input type="text" id="searchInput" placeholder="🔍 搜索号码..." style="flex:1;min-width:160px;max-width:300px">
-    <button class="btn btn-outline btn-sm" id="btnAddNumber">＋ 添加号码</button>
-    <button class="btn btn-outline btn-sm" id="btnExport">📥 导出</button>
-    <button class="btn btn-outline btn-sm" id="btnImport">📤 导入</button>
-    <input type="file" id="importFile" accept=".json" style="display:none">
+<!-- ===== TAB 4: 开通指南 ===== -->
+<div class="panel" id="panel-guide">
+  <div class="card highlight">
+    <h3>🏆 推荐方案：中国移动「和多号」</h3>
+    <p class="sub">最适合电销场景的个人虚拟号方案，每月仅需 5 元</p>
+    <ol class="steps">
+      <li>下载「<strong>和多号</strong>」APP（各大应用商店搜索）</li>
+      <li>用移动主号登录 → 点击「添加副号」→ 在线选号</li>
+      <li>完成实名认证（与主号身份证一致）→ 立即开通</li>
+      <li>在 APP 内选择副号拨打电话，对方只看副号</li>
+      <li>副号被标记多了 → 注销 → 重新申请新的（每月可申请3次）</li>
+    </ol>
+    <p style="margin-top:8px;font-size:.78rem;color:var(--tx2)">💰 <span class="price">5元/月</span> · 最多3个副号 · 通信费按主号套餐算 · 短信申请：发「KT」到 12583</p>
   </div>
-  <div id="numberList"></div>
-</section>
 
-<!-- ====== TAB 3: 申诉指南 ====== -->
-<section class="panel" id="panel-guide">
-  <div class="action-card">
-    <h3>📋 重要须知</h3>
-    <ul style="font-size:.84rem;color:var(--text2);padding-left:20px;line-height:2">
-      <li>所有申诉<strong style="color:var(--success)">完全免费</strong>，谨防"付费取消标记"骗局</li>
-      <li>每个平台标记独立，需<strong>逐个提交申诉</strong>（码号服务平台除外，它可一键同步多个平台）</li>
-      <li>审核周期：通常 <strong>1-3 个工作日</strong></li>
-      <li>个人号码：准备<strong>身份证正反面 + 实名截图</strong></li>
-      <li>企业号码：准备<strong>营业执照 + 号码归属证明</strong></li>
-      <li>清除后<strong> 30 天内避免高频外呼</strong>，否则极易被重新标记</li>
-      <li>认证件照片可标注"<strong>仅用于号码申诉</strong>"防滥用</li>
-      <li>码号服务平台主要支持联通、山东移动号码；其他运营商需逐个平台处理</li>
-    </ul>
+  <div class="guide-grid">
+    <div class="guide-card">
+      <h5>📱 中国联通「隐私小号」</h5>
+      <div class="info">
+        在联通营业厅APP搜索「隐私小号」开通。<br>
+        💰 <strong>5元/月</strong>起<br>
+        📍 联通手机用户可用<br>
+        ⚠️ 部分省份可能不支持
+      </div>
+    </div>
+    <div class="guide-card">
+      <h5>📱 中国电信「天翼小号」</h5>
+      <div class="info">
+        在电信营业厅APP搜索「小号」开通。<br>
+        💰 <strong>5元/月</strong>起<br>
+        📍 电信手机用户可用<br>
+      </div>
+    </div>
+    <div class="guide-card">
+      <h5>📱 实体副卡方案</h5>
+      <div class="info">
+        去营业厅办一张实体副卡（共享主号套餐）。<br>
+        💰 <strong>10元/月</strong>（功能费）<br>
+        📍 三运营商都支持<br>
+        ✅ 副卡被标记不影响主卡<br>
+        ✅ 办新卡门槛低，随办随用
+      </div>
+    </div>
+    <div class="guide-card">
+      <h5>📱 170/171 虚商号码</h5>
+      <div class="info">
+        购买虚拟运营商号码（京东通信、小米移动等）。<br>
+        💰 套餐价不等<br>
+        ⚠️ 虚商号段容易被标记<br>
+        ⚠️ 部分平台限制虚商号注册
+      </div>
+    </div>
   </div>
-</section>
+
+  <div class="card" style="margin-top:14px">
+    <h3>🎯 电销防标记最佳实践</h3>
+    <ol class="steps">
+      <li><strong>主号永不外呼</strong>：主号只用于接听和生活，保持绝对干净</li>
+      <li><strong>副号轮换使用</strong>：多用几个副号轮着打，分散外呼频率</li>
+      <li><strong>控制外呼频率</strong>：同一副号1小时内不打超过 5-10 个陌生号码</li>
+      <li><strong>通话保持时长</strong>：每次通话尽量超过 30 秒，避免"响一声就挂"</li>
+      <li><strong>副号被标记就换</strong>：注销被标记的副号重新申请，成本仅 5 元</li>
+    </ol>
+  </div>
+</div>
 
 </div><!-- .container -->
 
-<footer>
-  数据仅保存在浏览器本地 · 申诉全部免费 · 谨防诈骗 · Powered by <a href="https://www.opene164.org.cn" target="_blank">码号服务平台</a>
-</footer>
+<footer>数据保存在浏览器本地 · 虚拟号服务由运营商提供 · 工具仅辅助管理</footer>
+
+<!-- Add Number Modal -->
+<div class="modal-overlay" id="modalAdd">
+  <div class="modal">
+    <h4>➕ 添加号码</h4>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <label style="font-size:.82rem;font-weight:500">手机号码 *
+        <input type="text" id="addPhone" placeholder="11位手机号" maxlength="11">
+      </label>
+      <label style="font-size:.82rem;font-weight:500">号码类型 *
+        <select id="addType">
+          <option value="main">🔒 主号（不外呼，保护起来）</option>
+          <option value="virtual">📞 虚拟号/副号（用于外呼）</option>
+          <option value="physical">📱 实体副卡（用于外呼）</option>
+        </select>
+      </label>
+      <label style="font-size:.82rem;font-weight:500">运营商
+        <select id="addCarrier">
+          <option value="auto">自动识别</option>
+          <option value="中国移动">中国移动</option>
+          <option value="中国联通">中国联通</option>
+          <option value="中国电信">中国电信</option>
+          <option value="中国广电">中国广电</option>
+        </select>
+      </label>
+      <label style="font-size:.82rem;font-weight:500">备注标签
+        <input type="text" id="addLabel" placeholder="如：副号1-工作用" maxlength="20">
+      </label>
+    </div>
+    <div class="actions">
+      <button class="btn btn-out" onclick="closeModal('modalAdd')">取消</button>
+      <button class="btn btn-pri" id="btnConfirmAdd">确认添加</button>
+    </div>
+  </div>
+</div>
 
 <!-- Toast -->
-<div class="toast-container" id="toastC"></div>
+<div class="toasts" id="toasts"></div>
 
 <script>
 (function(){
 'use strict';
 
-// ========== CONSTANTS ==========
-const PLATFORMS = [
-  { key:'opene164',name:'码号服务平台',icon:'🏛️',url:'https://www.opene164.org.cn',tag:'官方推荐·一键清除',method:'填写号码+身份证号' },
-  { key:'tencent',name:'腾讯手机管家',icon:'🛡️',url:'https://yun.m.qq.com',tag:'最大用户量',method:'在线提交申诉' },
-  { key:'qihoo360',name:'360手机卫士',icon:'🔄',url:'http://haomashensu.360.cn',tag:'三个月内限一次',method:'用被标记号码拨打 010-89180702' },
-  { key:'baidu',name:'百度手机卫士',icon:'🔍',url:'https://haoma.baidu.com',tag:'',method:'在线提交' },
-  { key:'teddymobile',name:'泰迪熊移动',icon:'🐻',url:'http://www.teddymobile.cn/numberComplain',tag:'',method:'在线或邮件 kefu@teddymobile.cn' },
-  { key:'dianhua',name:'电话邦',icon:'📞',url:'http://www.dianhua.cn/appeal',tag:'',method:'在线或 400-061-8800' },
-  { key:'sogou',name:'搜狗号码通',icon:'💬',url:null,tag:'微信小程序',method:'微信搜"搜狗号码通"→申诉反馈' },
-  { key:'huawei',name:'华为黄页标记',icon:'📱',url:null,tag:'电话申诉',method:'拨打 950800' },
-  { key:'chinamobile',name:'中国移动高频防护',icon:'🏢',url:null,tag:'微信公众号',method:'关注 ktfsr10086→号码申诉' },
-];
-const HAS_URL = PLATFORMS.filter(p=>p.url);
-const CARRIER_MAP = {
+// ========== DATA ==========
+const CARRIER_PREFIX={
   '134':1,'135':1,'136':1,'137':1,'138':1,'139':1,'147':1,'148':1,'150':1,'151':1,'152':1,'157':1,'158':1,'159':1,'172':1,'178':1,'182':1,'183':1,'184':1,'187':1,'188':1,'195':1,'197':1,'198':1,
   '130':2,'131':2,'132':2,'145':2,'146':2,'155':2,'156':2,'166':2,'167':2,'171':2,'175':2,'176':2,'185':2,'186':2,'196':2,
   '133':3,'149':3,'153':3,'162':3,'173':3,'174':3,'177':3,'180':3,'181':3,'189':3,'190':3,'191':3,'193':3,'199':3,
   '192':4
-};
-const CARRIERS = {1:'中国移动',2:'中国联通',3:'中国电信',4:'中国广电'};
+},CARRIERS={1:'中国移动',2:'中国联通',3:'中国电信',4:'中国广电'};
+
+const PLATFORMS=[
+  {key:'opene164',name:'码号服务平台',icon:'🏛️',url:'https://www.opene164.org.cn',tag:'官方一键清除'},
+  {key:'tencent',name:'腾讯手机管家',icon:'🛡️',url:'https://yun.m.qq.com',tag:''},
+  {key:'qihoo360',name:'360手机卫士',icon:'🔄',url:'http://haomashensu.360.cn',tag:''},
+  {key:'baidu',name:'百度手机卫士',icon:'🔍',url:'https://haoma.baidu.com',tag:''},
+  {key:'teddymobile',name:'泰迪熊移动',icon:'🐻',url:'http://www.teddymobile.cn/numberComplain',tag:''},
+  {key:'dianhua',name:'电话邦',icon:'📞',url:'http://www.dianhua.cn/appeal',tag:''},
+  {key:'sogou',name:'搜狗号码通',icon:'💬',url:null,tag:'微信小程序'},
+  {key:'huawei',name:'华为黄页',icon:'📱',url:null,tag:'打950800'},
+  {key:'chinamobile',name:'移动高频防护',icon:'🏢',url:null,tag:'公众号ktfsr10086'},
+];
 
 // ========== UTILS ==========
-function validatePhone(p){return /^1[3-9]\d{9}$/.test(p)}
-function fmtPhone(p){return p&&p.length===11?p.replace(/(\d{3})(\d{4})(\d{4})/,'$1 $2 $3'):p||''}
-function detectCarrier(p){const k=p.substring(0,3);return CARRIERS[CARRIER_MAP[k]]||'未知'}
-function genId(){return 'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
-function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-
-function toast(msg,type){
-  const c=document.getElementById('toastC');
-  const t=document.createElement('div');
-  t.className='toast '+(type||'');
-  t.textContent=msg;c.appendChild(t);
-  setTimeout(()=>t.remove(),2600);
-}
+const $=id=>document.getElementById(id);
+function vp(p){return /^1[3-9]\d{9}$/.test(p)}
+function fp(p){return p&&p.length===11?p.replace(/(\d{3})(\d{4})(\d{4})/,'$1 $2 $3'):p||''}
+function dc(p){return CARRIERS[CARRIER_PREFIX[p?.substring(0,3)]]||'未知'}
+function gid(){return 'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function td(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function toast(m,t){const c=$('toasts');const d=document.createElement('div');d.className='toast '+(t||'');d.textContent=m;c.appendChild(d);setTimeout(()=>d.remove(),2500);}
 
 // ========== STORAGE ==========
-const KEY='hms_v2_data';
-function load(){
-  try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):[]}
-  catch(e){return[]}
-}
-function save(data){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){toast('存储空间不足','err')}}
+const KEY='vnm_v3';
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}}
+function save(d){try{localStorage.setItem(KEY,JSON.stringify(d))}catch{toast('存储空间不足','er')}}
 
 // ========== STATE ==========
-let numbers=load();
-let currentPhone='';
-let currentFilter='all';
-let currentSearch='';
+let nums=load();
 
-function makePlatforms(){
-  const o={};PLATFORMS.forEach(p=>{o[p.key]='pending'});
-  return o;
-}
-function addNumber(phone,label){
-  if(numbers.find(n=>n.phone===phone)){toast('该号码已存在','err');return null}
+function mkPlats(){const o={};PLATFORMS.forEach(p=>{o[p.key]='pending'});return o;}
+function addNum(phone,type,carrier,label){
+  if(nums.find(n=>n.phone===phone)){toast('号码已存在','er');return null}
   const n={
-    id:genId(),phone,label:label||'',
-    carrier:detectCarrier(phone),
-    createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),
-    platforms:makePlatforms()
+    id:gid(),phone,type:type||'virtual',
+    carrier:carrier==='auto'?dc(phone):carrier,
+    label:label||'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),
+    platforms:mkPlats()
   };
-  numbers.unshift(n);save(numbers);
-  return n;
+  nums.unshift(n);save(nums);return n;
 }
-function updateStatus(id,plat,status){
-  const n=numbers.find(x=>x.id===id);if(!n)return;
-  n.platforms[plat]=status;n.updatedAt=new Date().toISOString();
-  save(numbers);
-}
-function deleteNumber(id){numbers=numbers.filter(n=>n.id!==id);save(numbers)}
-function getClearedCount(n){return PLATFORMS.filter(p=>n.platforms[p.key]==='cleared').length}
-
-// ========== ONE-CLICK ACTIONS ==========
-function openAllPlatforms(phone){
-  const urls=HAS_URL.map(p=>p.url);
-  let opened=0;
-  urls.forEach((url,i)=>{
-    setTimeout(()=>{
-      const w=window.open(url,'_blank','noopener');
-      if(w)opened++;
-      if(i===urls.length-1){
-        if(opened===0)toast('弹窗被拦截！请允许本站弹窗后重试','err');
-        else toast(`已打开 ${opened}/${urls.length} 个申诉页面 ✅`,'ok');
-      }
-    },i*80);
-  });
+function delNum(id){nums=nums.filter(n=>n.id!==id);save(nums)}
+function updStatus(id,plat,status){
+  const n=nums.find(x=>x.id===id);if(!n)return;
+  n.platforms[plat]=status;n.updatedAt=new Date().toISOString();save(nums);
 }
 
-function openOpene164(phone){
-  window.open('https://www.opene164.org.cn','_blank','noopener');
-  toast('已打开码号服务平台（官方一键清除）🏛️','ok');
+// ========== DIALER ==========
+let dialBuf='';
+function dialKey(k){dialBuf+=k;updateDialDisplay()}
+function dialDel(){dialBuf=dialBuf.slice(0,-1);updateDialDisplay()}
+function dialClear(){dialBuf='';updateDialDisplay()}
+function updateDialDisplay(){
+  const sel=$('dialVnum');const vnum=sel.value;const idx=sel.selectedIndex;
+  let display=dialBuf||'输入号码';
+  if(dialBuf&&vnum){
+    const opt=sel.options[idx];
+    const carrier=opt?.dataset?.carrier||'';
+    if(carrier==='中国移动'&&opt?.dataset?.idx){
+      display=`12583${opt.dataset.idx}${dialBuf}`;
+    }
+  }
+  $('dialDisplay').textContent=display;
+  $('dialResult').textContent='';
 }
-
-// ========== TEMPLATE ==========
-function generateTemplate(phone,carrier){
-  return `【号码误标记申诉申请】
-
-本人号码：${fmtPhone(phone)}
-运营商：${carrier||detectCarrier(phone)}
-申诉日期：${today()}
-
-本号码为本人实名正常使用的${carrier||''}号码，用于正常的业务沟通联系，从未进行骚扰、诈骗、推销等违规行为。
-
-近期发现该号码被错误标记为"骚扰电话/推销"等标签，严重影响正常通话。现申请核实并清除错误标记，恢复号码正常状态。
-
-本人承诺：上述信息真实有效，本号码将合法合规使用。如有虚假，愿承担相应法律责任。
-
-申请人：[请填写姓名]
-身份证号：[请填写]
-联系方式：${phone}
-
-（请附上身份证正反面照片、手机号实名认证截图/缴费凭证）`;
+function dialCall(){
+  if(!dialBuf||dialBuf.length<3){toast('请输入完整号码','er');return}
+  const sel=$('dialVnum');const vnum=sel.value;
+  if(!vnum){toast('请先选择虚拟号码','er');return}
+  const idx=sel.selectedIndex;const opt=sel.options[idx];
+  const carrier=opt?.dataset?.carrier||'';
+  let callStr=dialBuf;
+  let hint='';
+  if(carrier==='中国移动'&&opt?.dataset?.idx){
+    callStr=`12583${opt.dataset.idx}${dialBuf}`;
+    hint=`✅ 拨打 ${callStr} → 对方看到号码：${fp(vnum)}`;
+  }else{
+    hint=`📞 请在「${carrier}」对应的APP中选择副号 ${fp(vnum)} 拨打 ${fp(dialBuf)}`;
+  }
+  $('dialResult').innerHTML=hint+`<br><a href="tel:${callStr}" style="font-size:.85rem">📞 点击直接拨打</a>`;
+  // Track usage
+  const n=nums.find(x=>x.phone===vnum);
+  if(n){n.lastDialed=td();save(nums)}
 }
 
 // ========== RENDER ==========
-function renderHero(){
-  const p=document.getElementById('mainPhone').value.trim();
-  currentPhone=validatePhone(p)?p:'';
-  const info=document.getElementById('heroInfo');
-  const btn1=document.getElementById('btnOneClick');
-  const btn2=document.getElementById('btnOpene164');
-  const btn3=document.getElementById('btnOpenAll');
-
-  if(currentPhone){
-    const c=detectCarrier(currentPhone);
-    info.innerHTML=`📶 <strong>${c}</strong> &nbsp;|&nbsp; 可一键打开 ${HAS_URL.length} 个申诉平台`;
-    btn1.disabled=false;btn1.textContent=`⚡ 为 ${fmtPhone(currentPhone)} 一键全部申诉`;
-    btn2.disabled=false;
-    btn3.disabled=false;
-    btn3.textContent=`🔓 一键打开 ${HAS_URL.length} 个申诉页面`;
-  }else{
-    info.innerHTML='';
-    btn1.disabled=true;btn1.textContent='⚡ 一键全部申诉（请先输入号码）';
-    btn2.disabled=true;
-    btn3.disabled=true;btn3.textContent='🔓 一键打开全部申诉页面';
+function renderDialer(){
+  const sel=$('dialVnum');
+  const vnums=nums.filter(n=>n.type==='virtual'||n.type==='physical');
+  sel.innerHTML='<option value="">-- 选择虚拟号（副号）--</option>';
+  vnums.forEach((n,i)=>{
+    const idx=(i%3)+1;
+    sel.innerHTML+=`<option value="${n.phone}" data-idx="${idx}" data-carrier="${n.carrier}">📞 ${fp(n.phone)} ${n.label||'(副号'+(i+1)+')'} · ${n.carrier}</option>`;
+  });
+  if(!vnums.length){
+    sel.innerHTML='<option value="">⚠️ 请先在「号码管家」添加虚拟号</option>';
   }
-
-  renderTemplate();
-  renderPlatGrid();
+  const mainNums=nums.filter(n=>n.type==='main');
+  if(mainNums.length)sel.innerHTML+='<optgroup label="🔒 主号（不建议用于外呼）">'+mainNums.map(n=>`<option value="${n.phone}">🔒 ${fp(n.phone)} ${n.label||''}</option>`).join('')+'</optgroup>';
+  sel.onchange=function(){
+    updateDialDisplay();
+    const idx=sel.selectedIndex;const opt=sel.options[idx];
+    $('dialCarrier').textContent=opt?.dataset?.carrier||'';
+  };
+  updateDialDisplay();
 }
 
-function renderTemplate(){
-  const box=document.getElementById('templateBox');
-  if(currentPhone){
-    box.innerHTML=`<button class="btn btn-sm btn-outline copy-btn" id="btnCopyTemplate">📋 复制</button>${generateTemplate(currentPhone)}`;
-    document.getElementById('btnCopyTemplate').onclick=function(){
-      navigator.clipboard.writeText(generateTemplate(currentPhone)).then(
-        ()=>toast('申诉话术已复制到剪贴板 ✅','ok'),
-        ()=>toast('复制失败，请手动选择文本','err')
-      );
-    };
-  }else{
-    box.innerHTML='<button class="btn btn-sm btn-outline copy-btn" id="btnCopyTemplate">📋 复制</button><span style="color:var(--text3)">请先输入手机号码...</span>';
-  }
+function renderStats(){
+  const vnums=nums.filter(n=>n.type==='virtual'||n.type==='physical');
+  const mains=nums.filter(n=>n.type==='main');
+  let dirty=0,clean=0;
+  vnums.forEach(n=>{
+    const cl=PLATFORMS.filter(p=>n.platforms[p.key]==='cleared').length;
+    const rej=PLATFORMS.filter(p=>n.platforms[p.key]==='rejected').length;
+    if(cl===PLATFORMS.length)clean++;else if(rej>0||cl<3)dirty++;else clean++;
+  });
+  $('statsGrid').innerHTML=`
+    <div class="stat"><div class="n" style="color:var(--pri)">${mains.length}</div><div class="l">🔒 主号（不外呼）</div></div>
+    <div class="stat"><div class="n" style="color:var(--suc)">${vnums.length}</div><div class="l">📞 虚拟号/副号</div></div>
+    <div class="stat"><div class="n" style="color:var(--suc)">${clean}</div><div class="l">✅ 干净的号</div></div>
+    <div class="stat"><div class="n" style="color:${dirty>0?'var(--dan)':'var(--tx3)'}">${dirty}</div><div class="l">⚠️ 被标记的号</div></div>`;
 }
 
-function renderPlatGrid(){
-  const grid=document.getElementById('platGrid');
-  grid.innerHTML=PLATFORMS.map(p=>{
-    const btn=p.url
-      ?`<button class="btn btn-sm btn-outline" onclick="event.preventDefault();window.open('${p.url}','_blank','noopener')">去申诉 →</button>`
-      :`<span class="badge badge-gray">${p.tag}</span>`;
-    return `<div class="plat-item">
-      <div><span class="plat-name">${p.icon} ${p.name}</span><br><span class="plat-tag">${p.tag||p.method}</span></div>
-      ${btn}
-    </div>`;
-  }).join('');
-  document.getElementById('platCount').textContent=HAS_URL.length;
-}
+function renderNumList(){
+  const mainNums=nums.filter(n=>n.type==='main');
+  const vnums=nums.filter(n=>n.type==='virtual'||n.type==='physical');
 
-function renderNumberList(){
-  const container=document.getElementById('numberList');
-  let list=[...numbers];
+  let html='';
 
-  if(currentSearch){
-    const q=currentSearch.toLowerCase();
-    list=list.filter(n=>n.phone.includes(q)||(n.label||'').toLowerCase().includes(q));
-  }
-  if(currentFilter!=='all'){
-    list=list.filter(n=>PLATFORMS.some(p=>n.platforms[p.key]===currentFilter));
-  }
-
-  if(!list.length){
-    container.innerHTML=`<div style="text-align:center;padding:40px;color:var(--text3)"><div style="font-size:3rem;margin-bottom:12px">📋</div><p>还没有号码</p><p style="font-size:.8rem">输入号码后点击「一键全部申诉」即可自动添加</p></div>`;
-    return;
-  }
-
-  container.innerHTML=list.map(n=>{
-    const cl=getClearedCount(n);
-    const total=PLATFORMS.length;
-    const pct=Math.round(cl/total*100);
-    const color=pct===100?'#059669':pct>=40?'#d97706':'#94a3b8';
-    const platsHtml=PLATFORMS.map(p=>{
-      const s=n.platforms[p.key];
-      const sel=(v)=>s===v?'selected':'';
-      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.78rem">
-        <span>${p.icon} ${p.name}</span>
-        <select style="font-size:.75rem;padding:3px 6px;border-radius:4px;border:1px solid var(--border)" data-id="${n.id}" data-plat="${p.key}" class="statusSel">
-          <option value="pending" ${sel('pending')}>⏸ 未申诉</option>
-          <option value="cleared" ${sel('cleared')}>✅ 已清除</option>
-          <option value="rejected" ${sel('rejected')}>❌ 被拒绝</option>
-        </select>
+  // Main numbers section
+  if(mainNums.length){
+    html+='<h4 style="font-size:.82rem;color:var(--tx2);margin-bottom:6px">🔒 主号（保护中，不用于外呼）</h4>';
+    mainNums.forEach(n=>{
+      html+=`<div class="num-card">
+        <div class="row">
+          <div><span class="phone">${fp(n.phone)}</span> <span class="tag tag-main">🔒 主号</span> ${n.label?`<span style="font-size:.78rem;color:var(--tx2)">${n.label}</span>`:''}</div>
+          <button class="btn btn-sm btn-dan" onclick="delNum('${n.id}')">🗑</button>
+        </div>
+        <div style="font-size:.73rem;color:var(--tx2);margin-top:4px">${n.carrier} · 添加于 ${new Date(n.createdAt).toLocaleDateString('zh-CN')}</div>
       </div>`;
-    }).join('');
+    });
+  }
 
-    return `<div class="number-card">
-      <div class="nhead">
-        <div>
-          <span class="phone">${fmtPhone(n.phone)}</span>
-          ${n.label?` <span style="font-size:.78rem;color:var(--text2)">${n.label}</span>`:''}
+  // Virtual numbers section
+  if(vnums.length){
+    html+='<h4 style="font-size:.82rem;color:var(--tx2);margin:12px 0 6px">📞 虚拟号/副号（用于外呼）</h4>';
+    vnums.forEach((n,i)=>{
+      const cl=PLATFORMS.filter(p=>n.platforms[p.key]==='cleared').length;
+      const total=PLATFORMS.length;
+      const pct=Math.round(cl/total*100);
+      const isClean=cl===total||(pct>=70&&!PLATFORMS.some(p=>n.platforms[p.key]==='rejected'));
+      const isBad=PLATFORMS.some(p=>n.platforms[p.key]==='rejected');
+      let statusCls='tag-virt',statusText='使用中';
+      if(isClean&&cl===total)statusText='✅ 干净';
+      else if(isBad){statusCls='tag-bad';statusText='⚠️ 被标记'}
+      else if(cl>0){statusCls='tag-dirty';statusText='⏳ 部分清除'}
+
+      html+=`<div class="num-card">
+        <div class="row">
+          <div>
+            <span class="phone">${fp(n.phone)}</span>
+            <span class="tag ${statusCls}">${statusText}</span>
+            ${n.label?`<span style="font-size:.78rem;color:var(--tx2)">${n.label}</span>`:''}
+          </div>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-sm btn-out" onclick="quickAppeal('${n.phone}')">🛡️ 申诉</button>
+            <button class="btn btn-sm btn-dan" onclick="delNum('${n.id}')">🗑</button>
+          </div>
         </div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span class="badge ${pct===100?'badge-ok':pct>0?'badge-wait':'badge-gray'}">${cl}/${total} 已清除</span>
-          <button class="btn btn-sm btn-outline quickOpen" data-phone="${n.phone}">🚀 一键申诉</button>
-          <button class="btn btn-sm btn-outline delBtn" data-id="${n.id}" style="color:var(--danger)">🗑</button>
+        <div style="font-size:.73rem;color:var(--tx2);margin-top:4px">
+          ${n.carrier} · 添加于 ${new Date(n.createdAt).toLocaleDateString('zh-CN')}
+          ${n.lastDialed?` · 最近外呼: ${n.lastDialed}`:''}
         </div>
-      </div>
-      <div class="meta">
-        <span>📶 ${n.carrier}</span>
-        <span>🕐 ${new Date(n.updatedAt).toLocaleDateString('zh-CN')}</span>
-      </div>
-      <div class="progress-row">
-        <div class="bar"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
-        <span class="pct">${pct}%</span>
-      </div>
-      <details style="margin-top:10px;font-size:.78rem">
-        <summary style="cursor:pointer;color:var(--primary);font-weight:500">展开各平台状态</summary>
-        <div style="margin-top:8px">${platsHtml}</div>
-      </details>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+          <div style="flex:1;height:5px;background:var(--bd);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:${isClean?'var(--suc)':isBad?'var(--dan)':'var(--war)'};border-radius:3px;transition:width .3s"></div>
+          </div>
+          <span style="font-size:.7rem;white-space:nowrap">${cl}/${total} 平台干净</span>
+        </div>
+      </div>`;
+    });
+  }
+
+  if(!nums.length){
+    html='<div style="text-align:center;padding:48px;color:var(--tx3)"><div style="font-size:3rem;margin-bottom:8px">📋</div><p>还没有添加号码</p><p style="font-size:.8rem">点击「＋ 添加号码」开始管理</p></div>';
+  }
+  $('numList').innerHTML=html;
+}
+
+function renderAppeal(){
+  const sel=$('appealNum');
+  const vnums=nums.filter(n=>n.type==='virtual'||n.type==='physical');
+  const mains=nums.filter(n=>n.type==='main');
+  sel.innerHTML='<option value="">-- 选择要申诉的号码 --</option>';
+  [...vnums,...mains].forEach(n=>{
+    const cl=PLATFORMS.filter(p=>n.platforms[p.key]==='cleared').length;
+    sel.innerHTML+=`<option value="${n.phone}">${fp(n.phone)} ${n.label||''} · ${cl}/${PLATFORMS.length} 干净</option>`;
+  });
+
+  let platHtml='';
+  PLATFORMS.forEach(p=>{
+    platHtml+=`<div style="background:var(--card);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:.8rem;font-weight:500">${p.icon} ${p.name}</span>
+      ${p.url?`<a href="${p.url}" target="_blank" class="btn btn-sm btn-out">去申诉 →</a>`:`<span style="font-size:.7rem;color:var(--tx3)">${p.tag}</span>`}
     </div>`;
-  }).join('');
+  });
+  $('appealPlats').innerHTML=platHtml;
+
+  const phone=sel.value;
+  const tpl=$('appealTemplate');
+  if(phone&&vp(phone)){
+    const n=nums.find(x=>x.phone===phone);
+    const c=n?.carrier||dc(phone);
+    tpl.innerHTML=`<button class="btn btn-sm btn-out" style="position:absolute;top:8px;right:8px" onclick="copyTemplate('${phone}')">📋 复制</button>【号码误标记申诉申请】
+
+本人号码：${fp(phone)}
+运营商：${c}
+申诉日期：${td()}
+
+本号码为本人实名使用的${c}号码，用于正常业务沟通，从未进行骚扰、诈骗、推销等违规行为。现发现该号码被错误标记为骚扰电话，严重影响正常通话。现申请核实并清除错误标记。
+
+本人承诺信息真实有效，本号码将合法合规使用。
+
+申请人：[姓名]    身份证号：[填写]    联系方式：${phone}`;
+  }else{
+    tpl.innerHTML='<span style="color:var(--tx3)">请先选择号码</span>';
+  }
+}
+
+// Modal
+function openModal(id){$(id).classList.add('on')}
+function closeModal(id){$(id).classList.remove('on')}
+
+function renderAll(){
+  renderStats();renderNumList();renderDialer();renderAppeal();
 }
 
 // ========== EVENTS ==========
-document.getElementById('mainPhone').addEventListener('input',renderHero);
-
-// One-click: open all + add number + open opene164
-document.getElementById('btnOneClick').addEventListener('click',function(){
-  if(!currentPhone)return;
-  // Add number if not exists
-  if(!numbers.find(n=>n.phone===currentPhone)){
-    addNumber(currentPhone,'');
-    renderNumberList();
-  }
-  // Open opene164 first (most important)
-  setTimeout(()=>openOpene164(currentPhone),100);
-  // Then open all others
-  setTimeout(()=>{
-    HAS_URL.filter(p=>p.key!=='opene164').forEach((p,i)=>{
-      setTimeout(()=>window.open(p.url,'_blank','noopener'),i*80);
-    });
-  },300);
-  toast('正在打开所有申诉平台...🏛️','ok');
-});
-
-document.getElementById('btnOpene164').addEventListener('click',function(){
-  if(!currentPhone)return;
-  if(!numbers.find(n=>n.phone===currentPhone)){addNumber(currentPhone,'');renderNumberList();}
-  openOpene164(currentPhone);
-});
-
-document.getElementById('btnOpenAll').addEventListener('click',function(){
-  if(!currentPhone)return;
-  if(!numbers.find(n=>n.phone===currentPhone)){addNumber(currentPhone,'');renderNumberList();}
-  openAllPlatforms(currentPhone);
-});
-
-// Quick open from list
-document.getElementById('numberList').addEventListener('click',function(e){
-  const btn=e.target.closest('.quickOpen');
-  if(btn){
-    const phone=btn.dataset.phone;
-    document.getElementById('mainPhone').value=phone;
-    renderHero();
-    setTimeout(()=>openOpene164(phone),100);
-    setTimeout(()=>{
-      HAS_URL.filter(p=>p.key!=='opene164').forEach((p,i)=>{
-        setTimeout(()=>window.open(p.url,'_blank','noopener'),i*80);
-      });
-    },300);
-  }
-  const del=e.target.closest('.delBtn');
-  if(del&&confirm('确定删除此号码？')){
-    deleteNumber(del.dataset.id);
-    renderNumberList();
-    toast('已删除','ok');
-  }
-});
-
-// Status changes
-document.getElementById('numberList').addEventListener('change',function(e){
-  const sel=e.target.closest('.statusSel');
-  if(!sel)return;
-  updateStatus(sel.dataset.id,sel.dataset.plat,sel.value);
-  renderNumberList();
-  const p=PLATFORMS.find(x=>x.key===sel.dataset.plat);
-  const labels={pending:'未申诉',cleared:'已清除',rejected:'被拒绝'};
-  toast(`${p?.name||''} → ${labels[sel.value]||sel.value}`,'ok');
-});
-
-// Tab switching
-document.getElementById('tabNav').addEventListener('click',function(e){
-  const t=e.target.closest('.tab');
-  if(!t)return;
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  t.classList.add('active');
+// Tabs
+$('tabs').addEventListener('click',function(e){
+  const t=e.target.closest('.tab');if(!t)return;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));t.classList.add('active');
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+t.dataset.tab).classList.add('active');
+  $('panel-'+t.dataset.tab).classList.add('active');
+  if(t.dataset.tab==='numbers')renderAll();
+  if(t.dataset.tab==='appeal')renderAppeal();
+  if(t.dataset.tab==='dial')renderDialer();
 });
 
-// Search
-document.getElementById('searchInput').addEventListener('input',function(){
-  currentSearch=this.value.trim();
-  renderNumberList();
+// Add number modal
+$('btnAddNum').addEventListener('click',()=>{
+  $('addPhone').value='';$('addType').value='virtual';$('addCarrier').value='auto';$('addLabel').value='';
+  openModal('modalAdd');
+});
+$('btnConfirmAdd').addEventListener('click',()=>{
+  const ph=$('addPhone').value.trim();
+  if(!vp(ph)){toast('请输入正确11位手机号','er');return}
+  const tp=$('addType').value;
+  const ca=$('addCarrier').value;
+  const lb=$('addLabel').value.trim();
+  addNum(ph,tp,ca,lb);
+  closeModal('modalAdd');
+  renderAll();toast('号码已添加 ✅','ok');
+});
+$('modalAdd').addEventListener('click',function(e){if(e.target===this)closeModal('modalAdd')});
+
+// Appeal panel
+$('appealNum').addEventListener('change',renderAppeal);
+$('btnAppealAll').addEventListener('click',()=>{
+  const phone=$('appealNum').value;
+  if(!phone||!vp(phone)){toast('请先选择号码','er');return}
+  const urls=PLATFORMS.filter(p=>p.url);
+  urls.forEach((p,i)=>setTimeout(()=>window.open(p.url,'_blank','noopener'),i*100));
+  toast(`已打开 ${urls.length} 个申诉平台 🚀`,'ok');
 });
 
-// Add number manually
-document.getElementById('btnAddNumber').addEventListener('click',function(){
-  const p=prompt('请输入手机号码：');
-  if(!p)return;
-  if(!validatePhone(p)){toast('号码格式不正确','err');return}
-  const l=prompt('备注标签（选填）：')||'';
-  addNumber(p,l);
-  renderNumberList();
-  document.getElementById('mainPhone').value=p;
-  renderHero();
-  toast('号码已添加 ✅','ok');
-});
-
-// Export
-document.getElementById('btnExport').addEventListener('click',function(){
-  const blob=new Blob([JSON.stringify(numbers,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='号码申诉备份_'+today()+'.json';
-  a.click();URL.revokeObjectURL(a.href);
+// Export/Import
+$('btnExport').addEventListener('click',()=>{
+  const b=new Blob([JSON.stringify(nums,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download='虚拟号备份_'+td()+'.json';a.click();URL.revokeObjectURL(a.href);
   toast('数据已导出 ✅','ok');
 });
-
-// Import
-document.getElementById('btnImport').addEventListener('click',function(){
-  document.getElementById('importFile').click();
-});
-document.getElementById('importFile').addEventListener('change',function(){
+$('btnImport').addEventListener('click',()=>$('importFile').click());
+$('importFile').addEventListener('change',function(){
   if(!this.files[0])return;
-  const reader=new FileReader();
-  reader.onload=function(e){
+  const r=new FileReader();
+  r.onload=function(e){
     try{
-      const data=JSON.parse(e.target.result);
-      if(!Array.isArray(data))throw new Error('格式错误');
-      if(!confirm(`即将导入 ${data.length} 个号码，当前数据将被覆盖。确认？`))return;
-      numbers=data;
-      save(numbers);
-      renderNumberList();
-      toast(`成功导入 ${data.length} 个号码 ✅`,'ok');
-    }catch(err){toast('文件格式错误','err')}
+      const d=JSON.parse(e.target.result);
+      if(!Array.isArray(d))throw new Error();
+      if(!confirm(`导入 ${d.length} 个号码，覆盖当前数据？`))return;
+      nums=d;save(nums);renderAll();toast(`已导入 ${d.length} 个号码 ✅`,'ok');
+    }catch{toast('文件格式错误','er')}
   };
-  reader.readAsText(this.files[0]);
-  this.value='';
+  r.readAsText(this.files[0]);this.value='';
 });
 
-// Enter key in phone input
-document.getElementById('mainPhone').addEventListener('keydown',function(e){
-  if(e.key==='Enter'&&currentPhone){
-    document.getElementById('btnOneClick').click();
-  }
-});
+// Global
+window.delNum=function(id){if(confirm('删除此号码？')){delNum(id);renderAll();toast('已删除','ok')}}
+window.quickAppeal=function(phone){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.tab[data-tab="appeal"]').classList.add('active');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  $('panel-appeal').classList.add('active');
+  $('appealNum').value=phone;
+  renderAppeal();
+};
+window.copyTemplate=function(phone){
+  const n=nums.find(x=>x.phone===phone);
+  const c=n?.carrier||dc(phone);
+  const txt=`【号码误标记申诉申请】
 
-// ========== INIT ==========
-renderPlatGrid();
-renderNumberList();
+本人号码：${fp(phone)}
+运营商：${c}
+申诉日期：${td()}
 
-// If there are existing numbers, show first one in hero
-if(numbers.length>0){
-  document.getElementById('mainPhone').value=numbers[0].phone;
-  renderHero();
-}
+本号码为本人实名使用的${c}号码，用于正常业务沟通，从未进行骚扰、诈骗、推销等违规行为。现发现该号码被错误标记为骚扰电话，严重影响正常通话。现申请核实并清除错误标记。
 
-console.log('🛡️ 一键清除手机骚扰标记工具已就绪');
-console.log('   📱 管理号码：'+numbers.length+' 个');
-console.log('   🔗 支持平台：'+PLATFORMS.length+' 个');
-console.log('   🏛️ 码号服务平台：opene164.org.cn（官方推荐）');
+本人承诺信息真实有效，本号码将合法合规使用。
+
+申请人：[姓名]    身份证号：[填写]    联系方式：${phone}`;
+  navigator.clipboard.writeText(txt).then(()=>toast('已复制 ✅','ok'),()=>toast('复制失败','er'));
+};
+
+// Init
+renderAll();
 })();
 </script>
 </body>
